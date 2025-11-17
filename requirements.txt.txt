@@ -1,6 +1,0 @@
-streamlit
-pandas
-matplotlib
-arabic-reshaper
-python-bidi
-numpy
