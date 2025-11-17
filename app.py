@@ -11,36 +11,36 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 from matplotlib import font_manager as fm
 
-# Load Arabic Font
+# Load Arabic Font (must exist in same folder)
 font_path = "Amiri-Regular.ttf"
 font_prop = fm.FontProperties(fname=font_path)
 
-# Fix Arabic for proper display
+# Fix Arabic for proper display in charts
 def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
 
 # --------------------------------------------------
-# Strong Arabic Cleaning Function
+# Safe Arabic Cleaning Function (No word corruption)
 # --------------------------------------------------
 
 def clean_text(text):
     text = text.lower()
 
-    # Remove Arabic diacritics
-    diacritics = re.compile("""
-        ّ | َ | ً | ُ | ٌ | ِ | ٍ | ْ | ـ
-    """, re.VERBOSE)
+    # Remove Arabic diacritics (Harakat)
+    diacritics = re.compile(r"[ًٌٍَُِّْـ]")
     text = re.sub(diacritics, "", text)
 
-    # Normalize different forms of Arabic letters
-    text = re.sub('[إأآا]', 'ا', text)
-    text = re.sub('ى', 'ي', text)
-    text = re.sub('ؤ', 'ء', text)
-    text = re.sub('ئ', 'ء', text)
-    text = re.sub('ة', 'ه', text)
-
-    # Remove all punctuation (Arabic + English)
+    # Remove punctuation (Arabic + English)
     text = re.sub(r"[^\u0600-\u06FF\s]", " ", text)
+
+    # SAFE normalization (does NOT corrupt words)
+    text = re.sub("[إأآا]", "ا", text)   # unify alif variations
+    text = re.sub("ى", "ي", text)        # unify alef maqsura to ya
+
+    # DO NOT TOUCH:
+    # ة — keep ta marbuta
+    # ؤ — keep hamza
+    # ئ — keep hamza
 
     # Remove extra spaces
     text = re.sub(r"\s+", " ", text).strip()
@@ -85,20 +85,20 @@ if analyze_button:
         st.warning("Please enter some text. / الرجاء إدخال نص.")
     else:
 
-        # Step 3 – Cleaning
+        # Step 1 – Clean text
         cleaned = clean_text(text_input)
 
         # Display cleaned text
         st.subheader("Cleaned Text / النص بعد التنظيف")
         st.write(cleaned)
 
-        # Step 4 – Tokenizing
+        # Step 2 – Tokenize
         words = cleaned.split()
 
-        # Step 5 – Remove Stopwords
+        # Step 3 – Remove Stopwords
         words = remove_stopwords(words)
 
-        # Step 6 – Frequency Count
+        # Step 4 – Frequency Count
         df = pd.DataFrame(words, columns=["word"])
         freq = df["word"].value_counts().reset_index()
         freq.columns = ["word", "count"]
@@ -106,17 +106,16 @@ if analyze_button:
         st.subheader("Word Frequency Table / جدول تكرار الكلمات")
         st.dataframe(freq)
 
-        # Step 7 – Plot
+        # Step 5 – Plot
         st.subheader("Word Frequency Plot / مخطط تكرار الكلمات")
 
         freq = freq.head(15)
         plt.figure(figsize=(18, 6))
 
-        # Arabic-fixed labels for the chart
+        # Fix Arabic labels
         labels = [fix_arabic(w) for w in freq["word"]]
 
         plt.bar(labels, freq["count"], color='blue', width=0.9)
-
         plt.xticks(rotation=60, fontproperties=font_prop, fontsize=18)
         plt.yticks(fontproperties=font_prop, fontsize=16)
 
@@ -124,3 +123,4 @@ if analyze_button:
         plt.ylabel(fix_arabic("التكرار"), fontproperties=font_prop, fontsize=22)
 
         st.pyplot(plt)
+
