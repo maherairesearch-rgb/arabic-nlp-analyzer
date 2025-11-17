@@ -1,0 +1,6 @@
+streamlit
+arabic-reshaper
+python-bidi
+matplotlib
+pandas
+altair
