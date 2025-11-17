@@ -1,6 +1,8 @@
 streamlit
-arabic-reshaper
-python-bidi
 matplotlib
 pandas
+arabic-reshaper
+python-bidi
 altair
+numpy
+
