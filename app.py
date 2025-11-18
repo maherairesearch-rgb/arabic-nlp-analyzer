@@ -8,78 +8,64 @@ import nltk
 
 nltk.download('punkt', quiet=True)
 
-# ==========================================
-# إعدادات الصفحة
-# ==========================================
-st.set_page_config(page_title="أداة تحليل النصوص العربية", layout="wide")
+# ───────────────────────────────
+# إزالة كل المسافات البيضاء الزايدة من الأعلى والجوانب
+# ───────────────────────────────
+st.set_page_config(page_title="أداة تحليل النصوص العربية", layout="centered")
 
-# تصميم هادئ ورسمي جدًا
 st.markdown("""
 <style>
-    .title {
-        font-size: 46px !important;
-        font-weight: 700;
-        text-align: center;
-        color: #1e40af;
-        margin-bottom: 10px;
-        font-family: 'Segoe UI', sans-serif;
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
-    .subtitle {
-        text-align: center;
-        font-size: 20px;
-        color: #475569;
-        margin-bottom: 40px;
+    .main > div {
+        padding-top: 0rem !important;
     }
-    .card {
-        background: white;
-        padding: 28px;
-        border-radius: 16px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        margin: 18px 0;
+    h1 {
+        margin-bottom: 0.5rem !important;
     }
-    .analyze-btn {
-        display: block;
-        margin: 35px auto;
-        background: #1e40af !important;
-        color: white !important;
-        font-size: 20px !important;
-        font-weight: 600 !important;
-        padding: 14px 50px !important;
-        border-radius: 12px !important;
-        border: none !important;
+    .stMarkdown {
+        margin-bottom: 0rem !important;
     }
-    .analyze-btn:hover {
-        background: #1e3a8a !important;
-    }
-    .stTextArea > div > div > textarea {
-        font-size: 17px !important;
-        border-radius: 12px !important;
-    }
+    /* إخفاء الهيدر والفوتر الافتراضي لـ Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# العنوان الرسمي
-st.markdown('<h1 class="title">أداة تحليل النصوص العربية</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">تحليل إحصائي ولغوي للنصوص العربية<br>إحصاءات الكلمات • تكرار المفردات • استخراج الجذور • سحابة الكلمات</p>', unsafe_allow_html=True)
+# ───────────────────────────────
+# التصميم الرسمي الأنيق
+# ───────────────────────────────
+st.markdown("""
+<div style="text-align: center; padding: 2rem 0;">
+    <h1 style="font-size: 46px; color: #1e40af; font-weight: 700; margin:0;">أداة تحليل النصوص العربية</h1>
+    <p style="font-size: 20px; color: #475569; margin:0.5rem 0 2rem 0;">
+        تحليل إحصائي ولغوي متقدم للنصوص العربية
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
-# إدخال النص
-with st.container():
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    text_input = st.text_area(
-        "أدخل النص العربي المراد تحليله:",
-        placeholder="الصق النص هنا...",
-        height=200,
-        label_visibility="collapsed"
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+# إدخال النص بدون بياض زايد
+text_input = st.text_area(
+    "أدخل النص العربي المراد تحليله:",
+    placeholder="الصق النص هنا...",
+    height=200,
+    label_visibility="collapsed"
+)
 
 analyze = st.button("بدء التحليل", use_container_width=True)
 
-# قوائم التوقف والجذر
+# ───────────────────────────────
+# القوائم والمعالجة
+# ───────────────────────────────
 arabic_stopwords = {
     "في","على","من","إلى","عن","ما","هذا","هذه","ذلك","التي","الذي","الذين","كان","يكون","هو","هي",
     "و","أن","إن","لا","ليس","لم","لن","قد","كما","ثم","حتى","مع","عند","بين","أو","بل","لكن","اي","أي",
-    "أنا","انت","نحن","هم","هن","هؤلاء","ذلك","تلك","اللذان","اللتان","اللاتي","اللائي"
+    "أنا","انت","نحن","هم","هن","هؤلاء","اللذان","اللتان","اللاتي","اللائي"
 }
 
 stemmer = ISRIStemmer()
@@ -89,13 +75,15 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text.lower()
 
+# ───────────────────────────────
 # التحليل
+# ───────────────────────────────
 if analyze:
-    if not text_input or text_input.strip() == "":
+    if not text_input.strip():
         st.error("الرجاء إدخال نص للتحليل.")
         st.stop()
 
-    with st.spinner("جاري معالجة النص واستخراج الإحصائيات..."):
+    with st.spinner("جاري معالجة النص..."):
         cleaned = clean_text(text_input)
         words = cleaned.split()
         no_stop = [w for w in words if w not in arabic_stopwords and len(w) > 2]
@@ -111,29 +99,21 @@ if analyze:
         col1, col2 = st.columns([1, 1], gap="large")
 
         with col1:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
             st.subheader("الإحصائيات العامة")
-            st.write(f"• عدد الكلمات في النص الأصلي: **{total_words:,}**")
-            st.write(f"• عدد الكلمات بعد إزالة كلمات التوقف: **{after_stop:,}**")
-            st.write(f"• عدد الجذور المتميزة المستخرجة: **{unique_roots:,}**")
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.write(f"• عدد الكلمات الأصلية: **{total_words:,}**")
+            st.write(f"• بعد إزالة كلمات التوقف: **{after_stop:,}**")
+            st.write(f"• عدد الجذور المتميزة: **{unique_roots:,}**")
 
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.subheader("أعلى الكلمات تكرارًا (15 كلمة)")
+            st.subheader("أعلى الكلمات تكرارًا")
             st.dataframe(freq.head(15), use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
 
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.subheader("الجذور الشائعة المستخرجة")
+            st.subheader("الجذور الشائعة")
             roots = pd.Series(stems).value_counts().head(20).reset_index()
-            roots.columns = ["الجذر", "عدد مرات الظهور"]
+            roots.columns = ["الجذر", "التكرار"]
             st.dataframe(roots, use_container_width=True, hide_index=True)
-            st.markdown('</div>', unsafe_allow_html=True)
 
         with col2:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
             st.subheader("سحابة الكلمات")
-
             wc = WordCloud(
                 width=800, height=500,
                 background_color="white",
@@ -149,34 +129,30 @@ if analyze:
             ax.axis('off')
             st.pyplot(fig)
             plt.close(fig)
-            st.markdown('</div>', unsafe_allow_html=True)
 
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.subheader("توزيع التكرار (أفقي)")
+            st.subheader("توزيع التكرار")
             top15 = freq.head(15)[::-1]
-
             fig2, ax2 = plt.subplots(figsize=(11, 8))
             bars = ax2.barh(range(len(top15)), top15["التكرار"], color="#1e40af")
-
             ax2.set_yticks(range(len(top15)))
             ax2.set_yticklabels(top15["الكلمة"])
             ax2.set_xlabel("عدد التكرارات")
             ax2.grid(axis='x', alpha=0.3)
-
             for i, bar in enumerate(bars):
-                width = bar.get_width()
-                ax2.text(width + 0.3, bar.get_y() + bar.get_height()/2,
-                        str(width), va='center', fontweight='bold')
-
+                ax2.text(bar.get_width() + 0.3, bar.get_y() + bar.get_height()/2,
+                        str(bar.get_width()), va='center', fontweight='bold')
             plt.tight_layout()
             st.pyplot(fig2)
             plt.close(fig2)
-            st.markdown('</div>', unsafe_allow_html=True)
 
-    # رسالة نهاية محترمة بدون بالونات
-    st.markdown("---")
     st.success("تم إكمال التحليل بنجاح.")
+
+# تذييل بسيط وأنيق
+st.markdown("<p style='text-align:center; color:#94a3b8; font-size:14px; margin-top:50px;'>"
+            "أداة تحليل نصوص عربية • مفتوحة المصدر • تعمل دون ملفات خارجية</p>", 
+            unsafe_allow_html=True)
 
 # تذييل أكاديمي
 st.markdown("---")
 st.caption("أداة تحليل نصوص عربية مفتوحة المصدر • تعمل دون الحاجة لملفات خارجية • مُطوّرة لدعم البحث اللغوي")
+
