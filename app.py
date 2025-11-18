@@ -21,44 +21,41 @@ font_prop = fm.FontProperties(fname=font_path)
 def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
 
-
 # ------------------------------------------
 # Streamlit Page Config
 # ------------------------------------------
-st.set_page_config(page_title="Digital Linguistic Platform – التراث العربي", layout="wide")
+st.set_page_config(page_title="Digital Heritage Linguistic Analyzer", layout="wide")
 
 # ------------------------------------------
-# University Logo (Optional)
+# University Logo (logo.png)
 # ------------------------------------------
 st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
-st.image("logo.png", width=140)   # ضع ملف الشعار هنا باسم university_logo.png
+st.image("logo.png", width=140)   # ✔️ Make sure the file exists in GitHub
 st.markdown("</div>", unsafe_allow_html=True)
 
 # ------------------------------------------
-# Title + Developer Signature
+# Title + Developer Signature (fully corrected)
 # ------------------------------------------
 st.markdown("""
     <div style="
-        background: rgba(240,240,240,0.60);
+        background: rgba(240,240,240,0.55);
         border-radius: 14px;
-        padding: 22px;
+        padding: 25px;
         margin-bottom: 25px;
+        text-align:center;
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
-        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
     ">
         <h1 style="
-            text-align:center;
-            font-size:38px;
+            font-size:32px;
             font-weight:800;
             color:#1d3557;
-            margin-bottom:8px;
+            margin-bottom:10px;
         ">
             منصة التحليل اللغوي الرقمي لنصوص التراث العربي
         </h1>
 
-        """<p style="
-            text-align:center;
+        <p style="
             font-size:18px;
             color:#444;
             margin-top:10px;
@@ -67,7 +64,6 @@ st.markdown("""
         </p>
     </div>
 """, unsafe_allow_html=True)
-
 
 # ------------------------------------------
 # Text Cleaning
@@ -78,7 +74,6 @@ def clean_text(text):
     text = re.sub(r'\d+', ' ', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
-
 
 # ------------------------------------------
 # Stopwords
@@ -92,7 +87,6 @@ arabic_stopwords = set([
 def remove_stopwords(words):
     return [w for w in words if w not in arabic_stopwords]
 
-
 # ------------------------------------------
 # Stemming
 # ------------------------------------------
@@ -101,7 +95,6 @@ stemmer = ISRIStemmer()
 def stem_words(words):
     return [stemmer.stem(w) for w in words]
 
-
 # ------------------------------------------
 # Main UI
 # ------------------------------------------
@@ -109,7 +102,6 @@ st.write("أدخل نصًا عربيًا ثم اضغط **حلّل النص** ل�
 
 text_input = st.text_area("أدخل النص العربي هنا:", height=200)
 analyze_button = st.button("حلّل النص")
-
 
 # ------------------------------------------
 # Pipeline
@@ -193,6 +185,4 @@ if analyze_button:
         .reset_index()
         .rename(columns={0:"count"})
     )
-
-
 
