@@ -12,16 +12,16 @@ import nltk
 nltk.download('punkt', quiet=True)
 
 # ------------------------------------------
-# Arabic Font & Helpers
+# Arabic Support
 # ------------------------------------------
-font_path = "Amiri-Regular.ttf"  # تأكد أن الملف موجود في نفس المجلد
+font_path = "Amiri-Regular.ttf"  # تأكد من وجود الخط في المجلد
 font_prop = fm.FontProperties(fname=font_path)
 
 def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
 
 # ------------------------------------------
-# Text Processing Functions
+# Text Processing
 # ------------------------------------------
 def clean_text(text):
     text = text.lower()
@@ -31,9 +31,9 @@ def clean_text(text):
     return text
 
 arabic_stopwords = {
-    "في","على","هذا","هذه","ذلك","من","ما","ماذا","عن","إلى","الى","هو","هي","ثم","كما",
-    "قد","أو","او","بل","و","وهو","وهي","لقد","لكن","كانت","كان","إن","أن","اذا","إذا",
-    "بين","حتى","كل","لم","لن","هل","هناك","هنا","مع","أي","اي","أنا","نحن","أنت","هم","هن"
+    "في","على","من","إلى","عن","هو","هي","كان","يكون","قد","لم","لن","لا","ما","ذلك",
+    "هذا","هذه","التي","الذي","وما","ومن","وعن","بين","حتى","كل","مع","أن","إن","أو","بل",
+    "و","ثم","لكن","كما","اذا","إذا","هنا","هناك","اي","أي","نحن","أنا","انت","هم","هن"
 }
 
 def remove_stopwords(words):
@@ -44,102 +44,96 @@ def stem_words(words):
     return [stemmer.stem(w) for w in words]
 
 # ------------------------------------------
-# Streamlit Page Config + Beautiful Background
+# Page Config & Dark Academic Theme
 # ------------------------------------------
-st.set_page_config(page_title="منصة التحليل اللغوي للتراث العربي", layout="wide")
+st.set_page_config(page_title="منصة تحليل النصوص العربية", layout="wide")
 
-# خلفية متدرجة أنيقة وهادئة
-page_bg = '''
+# خلفية داكنة أكاديمية فاخرة مع نصوص بيضاء واضحة
+dark_theme = """
 <style>
     [data-testid="stAppViewContainer"] {
-        background: linear-gradient(135deg, #f1faee 0%, #a8dadc 50%, #457b9d 100%);
-        background-attachment: fixed;
+        background: linear-gradient(135deg, #0b132b, #1c2526);
+        color: #e0e1dd;
     }
-    [data-testid="stHeader"] {background: rgba(0,0,0,0);}
-    .css-1d391kg {padding-top: 1rem;}
+    [data-testid="stHeader"] {background: transparent;}
+    .css-1d391kg, .css-1v0mbdj {padding-top: 2rem;}
+    h1, h2, h3, h4 {color: #a8dadc;}
+    .stButton>button {
+        background: #457b9d; color: white; border-radius: 12px; padding: 0.6rem 2rem;
+        font-weight: bold; border: none;
+    }
+    .stTextArea>div>div>textarea {background: #1c2526; color: #e0e1dd; border: 1px solid #457b9d;}
+    .stDataFrame {background: #1c2526;}
 </style>
-'''
-st.markdown(page_bg, unsafe_allow_html=True)
+"""
+st.markdown(dark_theme, unsafe_allow_html=True)
 
 # ------------------------------------------
-# الـ Header الجديد الفاخر والاحترافي
+# Header رسمي وأنيق
 # ------------------------------------------
-col1, col2, col3 = st.columns([1, 2.5, 1])
+col1, col2 = st.columns([1, 4])
 
 with col1:
     try:
-        st.image("logo.png", width=140)
+        st.image("logo.png", width=110)
     except:
-        st.markdown("<h1 style='font-size:60px; text-align:center;'>التراث</h1>", unsafe_allow_html=True)
+        pass
 
 with col2:
     st.markdown(
         """
         <div style="
-            text-align: center;
-            padding: 35px 20px;
-            background: linear-gradient(90deg, rgba(29, 53, 87, 0.97), rgba(69, 123, 157, 0.97));
-            border-radius: 24px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.3);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 2px solid rgba(168, 218, 220, 0.4);
+            text-align: right;
+            direction: rtl;
+            padding: 30px 40px;
+            background: linear-gradient(90deg, rgba(27, 38, 59, 0.95), rgba(69, 123, 157, 0.15));
+            border-right: 6px solid #a8dadc;
+            border-radius: 0 16px 16px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
             margin: 20px 0;
         ">
             <h1 style="
                 font-family: 'Amiri', serif;
-                font-size: 46px;
-                font-weight: 900;
+                font-size: 44px;
                 color: #f1faee;
                 margin: 0;
-                text-shadow: 3px 3px 10px rgba(0,0,0,0.5);
-                letter-spacing: 1.5px;
+                font-weight: 900;
+                letter-spacing: 1px;
             ">
                 منصة التحليل اللغوي الرقمي
             </h1>
             <p style="
-                font-size: 26px;
+                font-size: 24px;
                 color: #a8dadc;
-                margin: 14px 0 0;
-                font-weight: 400;
-                letter-spacing: 3px;
+                margin: 10px 0 0;
+                font-weight: normal;
             ">
-                لنصوص التراث العربي
+                لنصوص التراث العربي والدراسات اللغوية
             </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-with col3:
-    st.markdown(
-        """
-        <div style="text-align: center; margin-top: 40px;">
-            <span style="font-size: 60px; opacity: 0.8;">꧁</span>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("---")
 
 # ------------------------------------------
-# Text Input Area
+# Text Input
 # ------------------------------------------
 text_input = st.text_area(
-    "أدخل النص العربي هنا لتحليله:",
-    height=220,
-    placeholder="الصق أو اكتب أي نص من كتب التراث، القرآن، الحديث، الأدب، الشعر..."
+    "أدخل النص العربي المراد تحليله:",
+    height=240,
+    placeholder="مثال: نصوص من كتب التراث، القرآن الكريم، الحديث النبوي، الشعر الجاهلي، النثر الأدبي..."
 )
 
-analyze_button = st.button("🚀 حلّل النص الآن", use_container_width=True)
+analyze_button = st.button("بدء التحليل", use_container_width=True)
 
 # ------------------------------------------
 # Analysis Pipeline
 # ------------------------------------------
 if analyze_button:
     if not text_input.strip():
-        st.error("الرجاء إدخال نص عربي للتحليل.")
+        st.error("يرجى إدخال نص عربي أولاً.")
         st.stop()
 
     with st.spinner("جاري معالجة النص واستخراج الجذور..."):
@@ -148,89 +142,76 @@ if analyze_button:
         no_stop = remove_stopwords(words)
         stems = stem_words(no_stop)
 
-        df = pd.DataFrame(no_stop, columns=["كلمة"])
-        freq = df["كلمة"].value_counts().reset_index()
+        freq = pd.Series(no_stop).value_counts().reset_index()
         freq.columns = ["الكلمة", "التكرار"]
 
-        col1, col2 = st.columns([1, 1])
+        col_a, col_b = st.columns(2)
 
-        with col1:
-            st.success("✅ تم التحليل بنجاح!")
-            st.markdown(f"**عدد الكلمات الأصلية:** {len(words):,} كلمة")
-            st.markdown(f"**بعد إزالة كلمات التوقف:** {len(no_stop):,} كلمة")
-            st.markdown(f"**عدد الجذور الفريدة:** {len(set(stems)):,}")
+        with col_a:
+            st.markdown("### الإحصائيات الأساسية")
+            st.write(f"عدد الكلمات الأصلية: **{len(words):,}**")
+            st.write(f"عدد الكلمات بعد إزالة كلمات التوقف: **{len(no_stop):,}**")
+            st.write(f"عدد الجذور الفريدة المستخرجة: **{len(set(stems)):,}**")
 
-            st.markdown("### 📊 أكثر 20 كلمة تكرارًا")
+            st.markdown("### أعلى الكلمات تكرارًا")
             st.dataframe(freq.head(20), use_container_width=True)
 
-            st.markdown("### 🌿 الجذور العربية المستخرجة")
-            stem_df = pd.DataFrame(stems, columns=["الجذر"])
-            stem_freq = stem_df["الجذر"].value_counts().reset_index()
+            st.markdown("### الجذور المستخرجة (Stemming)")
+            stem_freq = pd.Series(stems).value_counts().reset_index()
             stem_freq.columns = ["الجذر", "التكرار"]
             st.dataframe(stem_freq.head(20), use_container_width=True)
 
-        with col2:
-            st.markdown("### ☁️ سحابة الكلمات")
-            text_for_wc = " ".join([fix_arabic(w) for w in no_stop])
+        with col_b:
+            st.markdown("### سحابة الكلمات")
+            wc_text = " ".join([fix_arabic(w) for w in no_stop])
             wc = WordCloud(
                 font_path=font_path,
                 width=800, height=500,
-                background_color="white",
-                colormap="viridis",
-                max_words=200,
-                prefer_horizontal=0.9
-            ).generate(text_for_wc)
+                background_color="#0b132b",
+                color_func=lambda *args, **kwargs: "#a8dadc",
+                prefer_horizontal=0.9,
+                max_words=150
+            ).generate(wc_text)
 
-            fig, ax = plt.subplots(figsize=(12, 6))
-            ax.imshow(wc, interpolation="bilinear")
-            ax.axis("off")
-            st.pyplot(fig)
+            fig1, ax1 = plt.subplots(figsize=(12, 7))
+            ax1.imshow(wc, interpolation="bilinear")
+            ax1.axis("off")
+            st.pyplot(fig1)
 
-            st.markdown("### 📈 مخطط التكرار (أعلى 15 كلمة)")
+            st.markdown("### توزيع التكرار (أعلى 15 كلمة)")
             top15 = freq.head(15)
             fig2, ax2 = plt.subplots(figsize=(11, 6))
-            ax2.bar([fix_arabic(w) for w in top15["الكلمة"]], top15["التكرار"], color="#1d3557")
-            ax2.set_xticklabels([fix_arabic(w) for w in top15["الكلمة"]], rotation=45, ha='right', fontproperties=font_prop)
-            ax2.set_ylabel("التكرار", fontproperties=font_prop, fontsize=14)
-            ax2.set_xlabel("الكلمات", fontproperties=font_prop, fontsize=14)
+            ax2.bar([fix_arabic(w) for w in top15["الكلمة"]], top15["التكرار"], color="#457b9d")
+            ax2.set_xticklabels([fix_arabic(w) for w in top15["الكلمة"]], rotation=45, ha='right', fontproperties=font_prop, fontsize=11)
+            ax2.set_facecolor('#0b132b')
+            fig2.patch.set_facecolor('#0b132b')
+            ax2.tick_params(colors='white')
+            ax2.yaxis.label.set_color('white')
+            ax2.xaxis.label.set_color('white')
+            ax2.spines['bottom'].set_color('gray')
+            ax2.spines['top'].set_color('gray')
+            ax2.spines['left'].set_color('gray')
+            ax2.spines['right'].set_color('gray')
             plt.tight_layout()
             st.pyplot(fig2)
 
 # ------------------------------------------
-# الـ Footer الأنيق في الأسفل
+# Footer رسمي ومحترم
 # ------------------------------------------
 st.markdown("---")
-
-footer = """
-<div style="
-    text-align: center;
-    padding: 40px 20px;
-    margin-top: 60px;
-    background: linear-gradient(135deg, #1d3557, #457b9d);
-    border-radius: 20px;
-    color: white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    border: 1px solid rgba(168, 218, 220, 0.3);
-">
-    <p style="
-        font-size: 28px;
-        margin: 0;
-        font-weight: bold;
-        text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+st.markdown(
+    """
+    <div style="
+        text-align: center;
+        padding: 30px;
+        color: #778da9;
+        font-size: 18px;
+        direction: rtl;
     ">
-        تم إعداده وتطويره بحب وعناية بواسطة
-    </p>
-    <h2 style="
-        font-size: 42px;
-        color: #a8dadc;
-        margin: 15px 0;
-        letter-spacing: 2px;
-    ">
-        مـــحمــد الجزائري
-    </h2>
-    <p style="font-size: 19px; opacity: 0.9; margin-top: 10px;">
+        تم إعداد هذه المنصة وتطويرها<br>
+        <strong style="font-size: 26px; color: #a8dadc;">محمد الجزائري</strong><br>
         باحث في اللسانيات الحاسوبية والتراث العربي الرقمي
-    </p>
-</div>
-"""
-st.markdown(footer, unsafe_allow_html=True)
+    </div>
+    """,
+    unsafe_allow_html=True
+)
