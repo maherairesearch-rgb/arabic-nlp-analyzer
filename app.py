@@ -22,14 +22,19 @@ def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
 
 # ------------------------------------------
-# UI Styling (Professional & Clean)
+# UI Styling (Glass Grey Background)
 # ------------------------------------------
 st.markdown("""
     <style>
+    /* Full App Background: Frosted Glass Grey */
     .stApp {
-        background: linear-gradient(135deg, #f4f7fb 0%, #e8eef5 100%);
+        background: rgba(200, 200, 200, 0.35); 
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         font-family: "Segoe UI", sans-serif;
     }
+
+    /* Main Title */
     h1 {
         text-align: center;
         font-size: 42px !important;
@@ -38,17 +43,25 @@ st.markdown("""
         letter-spacing: 1px;
         padding-bottom: 5px;
     }
+
+    /* Subheaders */
     h2, h3 {
         color: #27496d !important;
         font-weight: 600 !important;
     }
+
+    /* White Frosted Cards */
     .card {
-        background: white;
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         padding: 25px;
         border-radius: 18px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.07);
         margin-bottom: 25px;
     }
+
+    /* Buttons */
     .stButton>button {
         background-color: #1a73e8;
         color: white;
@@ -62,11 +75,15 @@ st.markdown("""
         background-color: #1558b0;
         transform: scale(1.03);
     }
+
+    /* Text Area */
     textarea {
         border-radius: 12px !important;
         border: 1px solid #c4c7ce !important;
         padding: 10px !important;
         font-size: 16px !important;
+        background: rgba(255,255,255,0.55) !important;
+        backdrop-filter: blur(6px);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -194,3 +211,5 @@ if analyze_button:
         .rename(columns={0:"count"})
     )
     st.markdown('</div>', unsafe_allow_html=True)
+
+
