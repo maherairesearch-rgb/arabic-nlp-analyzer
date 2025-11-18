@@ -57,10 +57,10 @@ def stem_words(words):
 st.set_page_config(page_title="Arabic Text Analyzer", layout="wide")
 
 # ------------------------------------------
-# HEADER (العنوان + التوقيع + شعار الجامعة)
+# HEADER (العنوان + الشعار فقط)
 # ------------------------------------------
 
-html_title = """
+html_header = """
 <div style="
     background: rgba(240,240,240,0.55);
     border-radius: 14px;
@@ -71,7 +71,7 @@ html_title = """
     -webkit-backdrop-filter: blur(8px);
 ">
 
-    <!-- University Logo Placeholder -->
+    <!-- University Logo -->
     <img src="logo.png" alt="University Logo" width="120" style="margin-bottom:15px;">
 
     <h1 style="
@@ -83,18 +83,10 @@ html_title = """
         منصة التحليل اللغوي الرقمي لنصوص التراث العربي
     </h1>
 
-    <p style="
-        font-size:18px;
-        color:#444;
-        margin-top:10px;
-    ">
-        تم تطويره بواسطة <strong>محمد الجزائري</strong>
-    </p>
-
 </div>
 """
 
-st.markdown(html_title, unsafe_allow_html=True)
+st.markdown(html_header, unsafe_allow_html=True)
 
 # ------------------------------------------
 # Text Input
@@ -111,28 +103,17 @@ if analyze_button:
         st.warning("الرجاء إدخال نص.")
         st.stop()
 
-    # Cleaning
     cleaned = clean_text(text_input)
-
-    # Tokenizing
     words = cleaned.split()
-
-    # Remove Stopwords
     no_stop = remove_stopwords(words)
-
-    # Stemming
     stems = stem_words(no_stop)
 
-    # Frequencies
     df = pd.DataFrame(no_stop, columns=["word"])
     freq = df["word"].value_counts().reset_index()
     freq.columns = ["word", "count"]
 
     col1, col2 = st.columns(2)
 
-    # ------------------------------------------
-    # Column 1 (Statistics + Table)
-    # ------------------------------------------
     with col1:
         st.subheader("إحصائيات النص")
         st.write(f"عدد الكلمات: {len(words)}")
@@ -142,9 +123,6 @@ if analyze_button:
         st.subheader("جدول التكرار")
         st.dataframe(freq.head(15))
 
-    # ------------------------------------------
-    # Column 2 (WordCloud + Plot)
-    # ------------------------------------------
     with col2:
         st.subheader("سحابة الكلمات")
 
@@ -174,9 +152,6 @@ if analyze_button:
 
         st.pyplot(plt)
 
-    # ------------------------------------------
-    # Roots Table
-    # ------------------------------------------
     st.subheader("الجذور العربية (Stemming)")
     stem_df = pd.DataFrame(stems, columns=["root"])
     st.dataframe(
@@ -184,4 +159,3 @@ if analyze_button:
         .reset_index()
         .rename(columns={0:"count"})
     )
-
