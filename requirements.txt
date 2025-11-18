@@ -1,6 +1,7 @@
 streamlit
+pandas
+matplotlib
 arabic-reshaper
 python-bidi
-matplotlib
-pandas
-altair
+wordcloud
+nltk
