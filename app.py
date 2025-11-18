@@ -222,14 +222,43 @@ if analyze_button:
                 edgecolor="#1d7a72"
             )
 
+            # ----- محور X -----
             ax2.set_xticklabels(
                 [fix_arabic(w) for w in top15["الكلمة"]],
-                rotation=45, ha='right', fontproperties=font_prop, fontsize=12
+                rotation=45,
+                ha='right',
+                fontproperties=font_prop,
+                fontsize=18,
+                fontweight='bold',
+                color='#f1faee'
+            )
+
+            # ----- محور Y -----
+            ax2.tick_params(
+                axis='y',
+                labelsize=18,
+                labelcolor='#f1faee',
+                width=2
+            )
+
+            # ----- عنوان المحورين -----
+            ax2.set_xlabel(
+                fix_arabic("الكلمات"),
+                fontproperties=font_prop,
+                fontsize=22,
+                fontweight='bold',
+                color='#f1faee'
+            )
+            ax2.set_ylabel(
+                fix_arabic("التكرار"),
+                fontproperties=font_prop,
+                fontsize=22,
+                fontweight='bold',
+                color='#f1faee'
             )
 
             ax2.set_facecolor('#0b1118')
             fig2.patch.set_facecolor('#0b1118')
-            ax2.tick_params(colors='#e8ecef')
             plt.tight_layout()
             st.pyplot(fig2)
 
@@ -255,7 +284,7 @@ st.markdown(
             تطوير وتنفيذ: محمد الجزائري
         </strong><br>
         <span style="font-size: 20px; color:#8ecae6;">
-            باحث في اللسانيات الحاسوبية والتراث العربي الرقمي
+            باحث في الدراسات العربية واللسانيات الحاسوبية
         </span>
     </div>
     """,
