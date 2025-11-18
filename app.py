@@ -57,7 +57,7 @@ st.markdown("""
             منصة التحليل اللغوي الرقمي لنصوص التراث العربي
         </h1>
 
-        <p style="
+        """<p style="
             text-align:center;
             font-size:18px;
             color:#444;
@@ -193,5 +193,6 @@ if analyze_button:
         .reset_index()
         .rename(columns={0:"count"})
     )
+
 
 
