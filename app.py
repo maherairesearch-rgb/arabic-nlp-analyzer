@@ -31,7 +31,7 @@ st.set_page_config(page_title="Digital Linguistic Platform – التراث ال
 # University Logo (Optional)
 # ------------------------------------------
 st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
-st.image("university_logo.png", width=140)   # ضع ملف الشعار هنا باسم university_logo.png
+st.image("logo.png", width=140)   # ضع ملف الشعار هنا باسم university_logo.png
 st.markdown("</div>", unsafe_allow_html=True)
 
 # ------------------------------------------
@@ -193,4 +193,5 @@ if analyze_button:
         .reset_index()
         .rename(columns={0:"count"})
     )
+
 
