@@ -22,50 +22,6 @@ def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
 
 # ------------------------------------------
-# Streamlit Page Config
-# ------------------------------------------
-st.set_page_config(page_title="Digital Heritage Linguistic Analyzer", layout="wide")
-
-# ------------------------------------------
-# University Logo (logo.png)
-# ------------------------------------------
-st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
-st.image("logo.png", width=140)   # ✔️ Make sure the file exists in GitHub
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ------------------------------------------
-# Title + Developer Signature (fully corrected)
-# ------------------------------------------
-st.markdown("""
-    <div style="
-        background: rgba(240,240,240,0.55);
-        border-radius: 14px;
-        padding: 25px;
-        margin-bottom: 25px;
-        text-align:center;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-    ">
-        <h1 style="
-            font-size:32px;
-            font-weight:800;
-            color:#1d3557;
-            margin-bottom:10px;
-        ">
-            منصة التحليل اللغوي الرقمي لنصوص التراث العربي
-        </h1>
-
-        <p style="
-            font-size:18px;
-            color:#444;
-            margin-top:10px;
-        ">
-            تم تطويره بواسطة <strong>محمد الجزائري</strong>
-        </p>
-    </div>
-""", unsafe_allow_html=True)
-
-# ------------------------------------------
 # Text Cleaning
 # ------------------------------------------
 def clean_text(text):
@@ -96,10 +52,53 @@ def stem_words(words):
     return [stemmer.stem(w) for w in words]
 
 # ------------------------------------------
-# Main UI
+# Streamlit UI
 # ------------------------------------------
-st.write("أدخل نصًا عربيًا ثم اضغط **حلّل النص** لعرض النتائج.")
+st.set_page_config(page_title="Arabic Text Analyzer", layout="wide")
 
+# ------------------------------------------
+# HEADER (العنوان + التوقيع + شعار الجامعة)
+# ------------------------------------------
+
+html_title = """
+<div style="
+    background: rgba(240,240,240,0.55);
+    border-radius: 14px;
+    padding: 25px;
+    margin-bottom: 25px;
+    text-align:center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+">
+
+    <!-- University Logo Placeholder -->
+    <img src="logo.png" alt="University Logo" width="120" style="margin-bottom:15px;">
+
+    <h1 style="
+        font-size:32px;
+        font-weight:800;
+        color:#1d3557;
+        margin-bottom:10px;
+    ">
+        منصة التحليل اللغوي الرقمي لنصوص التراث العربي
+    </h1>
+
+    <p style="
+        font-size:18px;
+        color:#444;
+        margin-top:10px;
+    ">
+        تم تطويره بواسطة <strong>محمد الجزائري</strong>
+    </p>
+
+</div>
+"""
+
+st.markdown(html_title, unsafe_allow_html=True)
+
+# ------------------------------------------
+# Text Input
+# ------------------------------------------
 text_input = st.text_area("أدخل النص العربي هنا:", height=200)
 analyze_button = st.button("حلّل النص")
 
