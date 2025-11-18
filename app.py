@@ -7,8 +7,22 @@ from bidi.algorithm import get_display
 from matplotlib import font_manager as fm
 from nltk.stem.isri import ISRIStemmer
 from wordcloud import WordCloud
+import base64
 import nltk
 nltk.download('punkt', quiet=True)
+
+# ------------------------------------------------
+# Load Logo as Base64 to Fix Streamlit Cloud Issue
+# ------------------------------------------------
+def load_logo_base64():
+    try:
+        with open("logo.png", "rb") as f:
+            logo_bytes = f.read()
+        return base64.b64encode(logo_bytes).decode()
+    except:
+        return None  # if image fails
+
+logo_base64 = load_logo_base64()
 
 # ------------------------------------------
 # Arabic Support
@@ -18,6 +32,7 @@ font_prop = fm.FontProperties(fname=font_path)
 
 def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
+
 
 # ------------------------------------------
 # Text Processing
@@ -33,8 +48,6 @@ arabic_stopwords = {
     "في","على","من","إلى","عن","هو","هي","كان","يكون","قد","لم","لن","لا","ما","ذلك",
     "هذا","هذه","التي","الذي","وما","ومن","وعن","بين","حتى","كل","مع","أن","إن","أو","بل",
     "و","ثم","لكن","كما","اذا","إذا","هنا","هناك","اي","أي","نحن","أنا","انت","هم","هن",
-    "الى","عن","فى","عن","على","من","إلى","في","عن","على","من","الذي","التي","الذين","اللاتي",
-    "ومن","وعلى","وفي","بين","بين","حتى","مع","أن","إن","لكن","بل","ثم","كما","ايضا","أيضا"
 }
 
 def remove_stopwords(words):
@@ -43,6 +56,7 @@ def remove_stopwords(words):
 stemmer = ISRIStemmer()
 def stem_words(words):
     return [stemmer.stem(w) for w in words]
+
 
 # ------------------------------------------
 # Page Config & Theme
@@ -81,8 +95,9 @@ dark_theme = """
 """
 st.markdown(dark_theme, unsafe_allow_html=True)
 
+
 # ------------------------------------------
-# HEADER (Title + University Logo)
+# HEADER
 # ------------------------------------------
 st.markdown(
     """
@@ -119,14 +134,18 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# شعار الجامعة – حجم صغير ومركزي
-st.markdown("""
-    <div style="text-align:center;">
-        <img src="logo.png" style="width:95px; margin-top:-20px; margin-bottom:10px;">
-    </div>
-""", unsafe_allow_html=True)
-
+# Logo in center (Base64 to ensure loading in Streamlit Cloud)
+if logo_base64:
+    st.markdown(
+        f"""
+        <div style="text-align:center; margin-top:-20px; margin-bottom:10px;">
+            <img src="data:image/png;base64,{logo_base64}" style="width:95px;">
+        </div>
+        """,
+        unsafe_allow_html=True
+)
 st.markdown("---")
+
 
 # ------------------------------------------
 # Text Input
@@ -216,6 +235,7 @@ if analyze_button:
             ax2.tick_params(colors='#e8ecef')
             plt.tight_layout()
             st.pyplot(fig2)
+
 
 # ------------------------------------------
 # Footer
