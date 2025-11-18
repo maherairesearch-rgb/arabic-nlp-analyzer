@@ -57,23 +57,23 @@ def stem_words(words):
 st.set_page_config(page_title="Arabic Text Analyzer", layout="wide")
 
 # ------------------------------------------
-# HEADER (العنوان + الشعار فقط)
+# HEADER (الشعار + العنوان)
 # ------------------------------------------
+
+# ⭐ إظهار الشعار بالطريقة الصحيحة (Streamlit فقط)
+st.image("logo.png", width=120)
 
 html_header = """
 <div style="
     background: rgba(240,240,240,0.55);
     border-radius: 14px;
     padding: 25px;
+    margin-top: 5px;
     margin-bottom: 25px;
     text-align:center;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 ">
-
-    <!-- University Logo -->
-    <img src="logo.png" alt="University Logo" width="120" style="margin-bottom:15px;">
-
     <h1 style="
         font-size:32px;
         font-weight:800;
@@ -82,7 +82,6 @@ html_header = """
     ">
         منصة التحليل اللغوي الرقمي لنصوص التراث العربي
     </h1>
-
 </div>
 """
 
@@ -159,3 +158,4 @@ if analyze_button:
         .reset_index()
         .rename(columns={0:"count"})
     )
+
