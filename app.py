@@ -12,7 +12,7 @@ import nltk
 nltk.download('punkt', quiet=True)
 
 # ------------------------------------------------
-# Load Logo as Base64 to Fix Streamlit Cloud Issue
+# Load Logo as Base64 (Fix Streamlit Cloud issue)
 # ------------------------------------------------
 def load_logo_base64():
     try:
@@ -20,7 +20,7 @@ def load_logo_base64():
             logo_bytes = f.read()
         return base64.b64encode(logo_bytes).decode()
     except:
-        return None  # if image fails
+        return None
 
 logo_base64 = load_logo_base64()
 
@@ -45,9 +45,8 @@ def clean_text(text):
     return text
 
 arabic_stopwords = {
-    "في","على","من","إلى","عن","هو","هي","كان","يكون","قد","لم","لن","لا","ما","ذلك",
-    "هذا","هذه","التي","الذي","وما","ومن","وعن","بين","حتى","كل","مع","أن","إن","أو","بل",
-    "و","ثم","لكن","كما","اذا","إذا","هنا","هناك","اي","أي","نحن","أنا","انت","هم","هن",
+    "في","على","من","إلى","عن","هو","هي","كان","قد","لم","لن","لا","ما","ذلك",
+    "هذا","هذه","التي","الذي","بين","حتى","كل","مع","أن","إن","أو","بل","و","ثم","لكن",
 }
 
 def remove_stopwords(words):
@@ -61,7 +60,7 @@ def stem_words(words):
 # ------------------------------------------
 # Page Config & Theme
 # ------------------------------------------
-st.set_page_config(page_title="منصة التحليل اللغوي الرقمي", layout="wide")
+st.set_page_config(page_title="منصة التحليل اللغوي الرقمي للتراث العربي", layout="wide")
 
 dark_theme = """
 <style>
@@ -108,8 +107,8 @@ st.markdown(
         background: linear-gradient(to bottom, rgba(10,14,23,0.98), rgba(11,19,23,0.9));
         border-bottom: 5px solid #2a9d8f;
         border-radius: 0 0 24px 24px;
-        box-shadow: 0 15px 50px rgba(0,0,0,0.7);
         margin-bottom: 40px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.7);
     ">
         <h1 style="
             font-family: 'Amiri', serif;
@@ -119,31 +118,24 @@ st.markdown(
             font-weight: 900;
             letter-spacing: 2px;
         ">
-            منصة التحليل اللغوي الرقمي
+            منصة التحليل اللغوي الرقمي للتراث العربي
         </h1>
-        <p style="
-            font-size: 28px;
-            color: #a8dadc;
-            margin: 18px 0 0;
-            font-weight: 500;
-        ">
-            لنصوص التراث العربي والدراسات اللغوية المعاصرة
-        </p>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# Logo in center (Base64 to ensure loading in Streamlit Cloud)
+# شعار الجامعة – Base64 لضمان الظهور دائمًا
 if logo_base64:
     st.markdown(
         f"""
-        <div style="text-align:center; margin-top:-20px; margin-bottom:10px;">
+        <div style="text-align:center; margin-top:-25px; margin-bottom:15px;">
             <img src="data:image/png;base64,{logo_base64}" style="width:95px;">
         </div>
         """,
         unsafe_allow_html=True
 )
+
 st.markdown("---")
 
 
@@ -158,8 +150,9 @@ text_input = st.text_area(
 
 analyze_button = st.button("بدء التحليل اللغوي", use_container_width=True)
 
+
 # ------------------------------------------
-# Analysis Pipeline
+# Analysis
 # ------------------------------------------
 if analyze_button:
     if not text_input.strip():
@@ -167,6 +160,7 @@ if analyze_button:
         st.stop()
 
     with st.spinner("جاري التحليل..."):
+
         cleaned = clean_text(text_input)
         words = cleaned.split()
         no_stop = remove_stopwords(words)
@@ -192,7 +186,7 @@ if analyze_button:
             st.dataframe(stem_freq.head(20), use_container_width=True)
 
         with col_b:
-            st.markdown("### سحابة الكلمات الأكثر تكرارًا (منسَّقة)")
+            st.markdown("### سحابة الكلمات الأكثر تكرارًا")
 
             wc_text = " ".join([fix_arabic(w) for w in no_stop])
 
@@ -219,6 +213,7 @@ if analyze_button:
 
             st.markdown("### توزيع التكرار (Top 15)")
             top15 = freq.head(15)
+
             fig2, ax2 = plt.subplots(figsize=(12, 7))
             ax2.bar(
                 [fix_arabic(w) for w in top15["الكلمة"]],
@@ -226,10 +221,12 @@ if analyze_button:
                 color="#2a9d8f",
                 edgecolor="#1d7a72"
             )
+
             ax2.set_xticklabels(
                 [fix_arabic(w) for w in top15["الكلمة"]],
                 rotation=45, ha='right', fontproperties=font_prop, fontsize=12
             )
+
             ax2.set_facecolor('#0b1118')
             fig2.patch.set_facecolor('#0b1118')
             ax2.tick_params(colors='#e8ecef')
@@ -238,7 +235,7 @@ if analyze_button:
 
 
 # ------------------------------------------
-# Footer
+# FOOTER (كما اتفقنا)
 # ------------------------------------------
 st.markdown("---")
 st.markdown(
@@ -246,16 +243,20 @@ st.markdown(
     <div style="
         text-align:center;
         padding:40px 20px;
-        color:#778da9;
-        font-size:19px;
+        color:#a8dadc;
+        font-size:22px;
         direction:rtl;
         background:rgba(10,14,23,0.7);
         border-top:3px solid #2a9d8f;
         border-radius:16px 16px 0 0;
-        margin-top:50px;
+        margin-top:60px;
     ">
-        تم تطوير هذه المنصة<br>
-        <strong style="font-size: 28px; color:#a8dadc;">محمد الجزائري</strong>
+        <strong style="font-size: 27px; color:#f1faee;">
+            تطوير وتنفيذ: محمد الجزائري
+        </strong><br>
+        <span style="font-size: 20px; color:#8ecae6;">
+            باحث في اللسانيات الحاسوبية والتراث العربي الرقمي
+        </span>
     </div>
     """,
     unsafe_allow_html=True
