@@ -22,6 +22,56 @@ def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
 
 # ------------------------------------------
+# Streamlit Page Config
+# ------------------------------------------
+st.set_page_config(page_title="Advanced Arabic Text Analyzer", layout="wide")
+
+# ------------------------------------------
+# Elegant Header Section (UI Improvement)
+# ------------------------------------------
+st.markdown("""
+    <div style="
+        background: rgba(240,240,240,0.60);
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 25px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    ">
+        <h1 style="
+            text-align:center;
+            font-size:40px;
+            font-weight:800;
+            color:#1d3557;
+            margin-bottom:10px;
+        ">
+            Advanced Arabic Text Analyzer
+        </h1>
+
+        <h3 style="
+            text-align:center;
+            font-weight:500;
+            color:#264b73;
+            margin-top:0;
+        ">
+            منصة التحليل العربي المتقدم
+        </h3>
+
+        <hr style="border: 0; border-top: 1px solid #b5bcc4; margin:15px 0;">
+
+        <p style="
+            text-align:center;
+            font-size:18px;
+            color:#333;
+            margin:0;
+        ">
+            تم إعداد هذا النموذج بواسطة: <strong>محمد الجزائري</strong>
+        </p>
+    </div>
+""", unsafe_allow_html=True)
+
+# ------------------------------------------
 # Text Cleaning
 # ------------------------------------------
 def clean_text(text):
@@ -52,13 +102,9 @@ def stem_words(words):
     return [stemmer.stem(w) for w in words]
 
 # ------------------------------------------
-# Streamlit UI
+# Main UI
 # ------------------------------------------
-st.set_page_config(page_title="Arabic Text Analyzer – Medium Level", layout="wide")
-
-st.title("Arabic Text Analyzer – التحليل العربي (مستوى متوسط)")
-
-st.write("قم بإدخال نص عربي ثم اضغط **حلّل النص** لعرض النتائج.")
+st.write("أدخل نصًا عربيًا ثم اضغط **حلّل النص** لعرض النتائج.")
 
 text_input = st.text_area("أدخل النص العربي هنا:", height=200)
 analyze_button = st.button("حلّل النص")
