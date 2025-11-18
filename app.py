@@ -3,124 +3,148 @@ import re
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# --------------------------------------------------
-# Arabic Plot Support (Font + Reshaping + RTL Fix)
-# --------------------------------------------------
-
+# ------------------------------------------
+# Arabic NLP Support
+# ------------------------------------------
 import arabic_reshaper
 from bidi.algorithm import get_display
 from matplotlib import font_manager as fm
+from nltk.stem.isri import ISRIStemmer
+from wordcloud import WordCloud
+import nltk
+nltk.download('punkt')
 
-# Load Arabic Font (must exist in same folder)
+# Arabic font
 font_path = "Amiri-Regular.ttf"
 font_prop = fm.FontProperties(fname=font_path)
 
-# Fix Arabic for proper display in charts
 def fix_arabic(text):
     return get_display(arabic_reshaper.reshape(text))
 
-# --------------------------------------------------
-# Safe Arabic Cleaning Function (No word corruption)
-# --------------------------------------------------
-
+# ------------------------------------------
+# Text Cleaning
+# ------------------------------------------
 def clean_text(text):
     text = text.lower()
-
-    # Remove Arabic diacritics (Harakat)
-    diacritics = re.compile(r"[ًٌٍَُِّْـ]")
-    text = re.sub(diacritics, "", text)
-
-    # Remove punctuation (Arabic + English)
-    text = re.sub(r"[^\u0600-\u06FF\s]", " ", text)
-
-    # SAFE normalization (does NOT corrupt words)
-    text = re.sub("[إأآا]", "ا", text)   # unify alif variations
-    text = re.sub("ى", "ي", text)        # unify alef maqsura to ya
-
-    # DO NOT TOUCH:
-    # ة — keep ta marbuta
-    # ؤ — keep hamza
-    # ئ — keep hamza
-
-    # Remove extra spaces
-    text = re.sub(r"\s+", " ", text).strip()
-
+    text = re.sub(r'[^\w\s]', ' ', text)
+    text = re.sub(r'\d+', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-# --------------------------------------------------
-# Arabic Stopwords
-# --------------------------------------------------
-
+# ------------------------------------------
+# Stopwords
+# ------------------------------------------
 arabic_stopwords = set([
-    "في","على","هذا","هذه","ذلك","تلك","من","ما","ماذا","عن","الى","إلى","هو","هي",
-    "ثم","كما","قد","او","أو","بل","و","وهو","وهي","لقد","لكن","كانت","كان","ان","إن",
-    "اذا","إذا","بين","حتى","كل","لم","لن","هل","هناك","هنا","مع","أي","اي","انا"
+    "في","على","هذا","هذه","ذلك","من","ما","ماذا","عن","إلى","الى","هو","هي",
+    "ثم","كما","قد","أو","او","بل","و","وهو","وهي","لقد","لكن","كانت","كان","إن","أن",
+    "اذا","إذا","بين","حتى","كل","لم","لن","هل","هناك","هنا","مع","أي","اي","أنا"
 ])
 
 def remove_stopwords(words):
     return [w for w in words if w not in arabic_stopwords]
 
-# --------------------------------------------------
+# ------------------------------------------
+# Stemming
+# ------------------------------------------
+stemmer = ISRIStemmer()
+
+def stem_words(words):
+    return [stemmer.stem(w) for w in words]
+
+# ------------------------------------------
 # Streamlit UI
-# --------------------------------------------------
+# ------------------------------------------
+st.set_page_config(page_title="Arabic Text Analyzer – Medium Level", layout="wide")
 
-st.set_page_config(page_title="Arabic Text Analyzer", layout="wide")
-st.title("Arabic Text Analyzer – نظام تحليل النص العربي")
+st.title("Arabic Text Analyzer – التحليل العربي (مستوى متوسط)")
 
-st.write("""
-Paste any Arabic text below and click **Analyze Text** to begin.  
-قم بلصق أي نص عربي في الخانة أدناه ثم اضغط **حلّل النص** للبدء.
-""")
+st.write("قم بإدخال نص عربي ثم اضغط **حلّل النص** لعرض النتائج.")
 
-text_input = st.text_area("ادخل النص العربي هنا / Enter Arabic text here:", height=200)
-analyze_button = st.button("Analyze Text / حلّل النص")
+text_input = st.text_area("أدخل النص العربي هنا:", height=200)
+analyze_button = st.button("حلّل النص")
 
-# --------------------------------------------------
-# Analysis Pipeline
-# --------------------------------------------------
-
+# ------------------------------------------
+# Pipeline
+# ------------------------------------------
 if analyze_button:
 
     if text_input.strip() == "":
-        st.warning("Please enter some text. / الرجاء إدخال نص.")
-    else:
+        st.warning("الرجاء إدخال نص.")
+        st.stop()
 
-        # Step 1 – Clean text
-        cleaned = clean_text(text_input)
+    # Cleaning
+    cleaned = clean_text(text_input)
 
-        # Display cleaned text
-        st.subheader("Cleaned Text / النص بعد التنظيف")
-        st.write(cleaned)
+    # Tokenizing
+    words = cleaned.split()
 
-        # Step 2 – Tokenize
-        words = cleaned.split()
+    # Remove Stopwords
+    no_stop = remove_stopwords(words)
 
-        # Step 3 – Remove Stopwords
-        words = remove_stopwords(words)
+    # Stemming
+    stems = stem_words(no_stop)
 
-        # Step 4 – Frequency Count
-        df = pd.DataFrame(words, columns=["word"])
-        freq = df["word"].value_counts().reset_index()
-        freq.columns = ["word", "count"]
+    # Frequencies
+    df = pd.DataFrame(no_stop, columns=["word"])
+    freq = df["word"].value_counts().reset_index()
+    freq.columns = ["word", "count"]
 
-        st.subheader("Word Frequency Table / جدول تكرار الكلمات")
-        st.dataframe(freq)
+    col1, col2 = st.columns(2)
 
-        # Step 5 – Plot
-        st.subheader("Word Frequency Plot / مخطط تكرار الكلمات")
+    # ------------------------------------------
+    # Column 1 (Statistics + Table)
+    # ------------------------------------------
+    with col1:
+        st.subheader("إحصائيات النص")
+        st.write(f"عدد الكلمات: {len(words)}")
+        st.write(f"بعد إزالة كلمات التوقف: {len(no_stop)}")
+        st.write(f"عدد الجذور المستخرجة: {len(stems)}")
 
-        freq = freq.head(15)
-        plt.figure(figsize=(18, 6))
+        st.subheader("جدول التكرار")
+        st.dataframe(freq.head(15))
 
-        # Fix Arabic labels
-        labels = [fix_arabic(w) for w in freq["word"]]
+    # ------------------------------------------
+    # Column 2 (WordCloud + Plot)
+    # ------------------------------------------
+    with col2:
+        st.subheader("سحابة الكلمات")
 
-        plt.bar(labels, freq["count"], color='blue', width=0.9)
-        plt.xticks(rotation=60, fontproperties=font_prop, fontsize=18)
-        plt.yticks(fontproperties=font_prop, fontsize=16)
+        reshaped = " ".join([fix_arabic(w) for w in no_stop])
 
-        plt.xlabel(fix_arabic("الكلمات"), fontproperties=font_prop, fontsize=22)
-        plt.ylabel(fix_arabic("التكرار"), fontproperties=font_prop, fontsize=22)
+        wc = WordCloud(
+            font_path=font_path,
+            width=700,
+            height=350,
+            background_color="white"
+        ).generate(reshaped)
+
+        fig_wc, ax_wc = plt.subplots(figsize=(10,4))
+        ax_wc.imshow(wc, interpolation="bilinear")
+        ax_wc.axis("off")
+        st.pyplot(fig_wc)
+
+        st.subheader("مخطط التكرار (Top 15)")
+
+        plt.figure(figsize=(16,5))
+        labels = [fix_arabic(w) for w in freq.head(15)["word"]]
+        plt.bar(labels, freq.head(15)["count"], color='blue')
+        plt.xticks(rotation=60, fontproperties=font_prop, fontsize=14)
+        plt.yticks(fontproperties=font_prop, fontsize=14)
+        plt.xlabel(fix_arabic("الكلمات"), fontproperties=font_prop, fontsize=18)
+        plt.ylabel(fix_arabic("التكرار"), fontproperties=font_prop, fontsize=18)
 
         st.pyplot(plt)
+
+    # ------------------------------------------
+    # Roots Table
+    # ------------------------------------------
+    st.subheader("الجذور العربية (Stemming)")
+    stem_df = pd.DataFrame(stems, columns=["root"])
+    st.dataframe(
+        stem_df.value_counts()
+        .reset_index()
+        .rename(columns={0:"count"})
+    )
+
+
 
